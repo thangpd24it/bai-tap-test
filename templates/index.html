@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Music Recommender</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .section { margin-bottom: 30px; border: 1px solid #ddd; padding: 15px; border-radius: 5px; }
+        .song-card { display: inline-block; width: 200px; border: 1px solid #eee; margin: 5px; padding: 10px; vertical-align: top;}
+        .btn { padding: 5px 10px; background: #007bff; color: white; text-decoration: none; border-radius: 3px; }
+        .mood-btn { padding: 8px 15px; margin-right: 5px; cursor: pointer; background: #eee; border: none; }
+        .mood-btn:hover { background: #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Chào, {{ username }}! <a href="/logout" style="font-size: small;">(Đăng xuất)</a></h1>
+    
+    <div class="section">
+        <h2>🔥 Gợi ý riêng cho bạn (Dựa trên lịch sử đánh giá)</h2>
+        {% if collab_recommendations %}
+            {% for song in collab_recommendations %}
+                <div class="song-card">
+                    <b>{{ song.title }}</b><br>
+                    <small>{{ song.artist }}</small><br>
+                    <form action="/rate_song/{{ song.id }}" method="post">
+                        <input type="number" name="rating" min="1" max="5" style="width: 40px" required>
+                        <button type="submit">Rate</button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Chưa đủ dữ liệu. Hãy đánh giá thêm bài hát bên dưới để hệ thống hiểu gu của bạn!</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>😊 Bạn đang cảm thấy thế nào?</h2>
+        <form method="POST" action="/">
+            <button type="submit" name="mood" value="Happy" class="mood-btn">Vui vẻ (Happy)</button>
+            <button type="submit" name="mood" value="Sad" class="mood-btn">Buồn (Sad)</button>
+            <button type="submit" name="mood" value="Chill" class="mood-btn">Thư giãn (Chill)</button>
+            <button type="submit" name="mood" value="Energetic" class="mood-btn">Sôi động (Energetic)</button>
+        </form>
+
+        {% if selected_mood %}
+            <h3>Kết quả cho tâm trạng: {{ selected_mood }}</h3>
+            {% for song in mood_recommendations %}
+                <div class="song-card">
+                    <b>{{ song.title }}</b><br>
+                    <small>{{ song.artist }}</small>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>🎵 Khám phá & Đánh giá (Để gợi ý chuẩn hơn)</h2>
+        {% for song in all_songs %}
+            <div class="song-card">
+                <b>{{ song.title }}</b><br>
+                <small>{{ song.artist }}</small><br>
+                <form action="/rate_song/{{ song.id }}" method="post">
+                    <input type="number" name="rating" min="1" max="5" style="width: 40px" required>
+                    <button type="submit">Rate</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
